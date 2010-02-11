@@ -1,0 +1,52 @@
+#!/bin/bash
+# BEGIN COPYRIGHT BLOCK
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# (C) 2007 Red Hat, Inc.
+# All rights reserved.
+# END COPYRIGHT BLOCK
+
+# Always switch into the base directory of this
+# shell script prior to executing it so that all
+# of its output is written to this directory
+cd `dirname $0`
+
+# Retrieve the directory name housing this component
+PWD=`pwd`
+
+# Set Red Hat component-specific environment variables
+REDHAT_BUILD_SCRIPT=`basename $0`
+export REDHAT_BUILD_SCRIPT
+REDHAT_COMPONENT=`basename ${PWD}`
+export REDHAT_COMPONENT
+REDHAT_SPECFILE="nuxwdog.spec"
+export REDHAT_SPECFILE
+
+# Set PKI 'ant' environment variables (originally obtained from specfile)
+PKI_PRODUCT_UI_FLAVOR_PREFIX=""
+export PKI_PRODUCT_UI_FLAVOR_PREFIX
+PKI_PRODUCT_PREFIX=""
+export PKI_PRODUCT_PREFIX
+PKI_PRODUCT="nuxwdog"
+export PKI_PRODUCT
+PKI_VERSION="1.0.0"
+export PKI_VERSION
+
+# Set Red Hat helper variables
+REDHAT_COMPONENT_NAME=${PKI_PRODUCT}
+export REDHAT_COMPONENT_NAME
+
+# Invoke the shared Red Hat PKI build script
+config-ext/build_redhat_pki $@
+
