@@ -106,26 +106,23 @@ rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
 
 ## rearrange files to be in the desired native packaging layout
-if [ -e %{buildroot}/usr/local ]; then
+if [ -d %{buildroot}/usr/local ]; then
     cp -r %{buildroot}/usr/local/* %{buildroot}/usr
     rm -rf %{buildroot}/usr/local
 fi
 mkdir -p  %{buildroot}/usr/share/doc
 mv %{buildroot}/usr/doc %{buildroot}/usr/share/doc/%{name}-%{version}
 
-mkdir -p %{buildroot}/%{_libdir}/perl5/vendor_perl
-#mv %{buildroot}/usr/local/lib/perl5/site_perl %{buildroot}/%{_libdir}/perl5/site_perl
-mv %{buildroot}/%{_libdir}/perl5/site_perl/* %{buildroot}/%{_libdir}/perl5/vendor_perl
-rm -rf %{buildroot}/%{_libdir}/perl5/site_perl
-find %{buildroot}/%{_libdir}/perl5 -name .packlist |xargs rm -f {}
-find %{buildroot}/%{_libdir}/perl5 -name "*.bs" |xargs rm -f {}
-find %{buildroot}/%{_libdir}/perl5 -name "Nuxwdogclient.so" |xargs chmod 755 
-find %{buildroot}/%{_libdir}/perl5 -name "Nuxwdogclient.pm" |xargs chmod 644 
+find %{buildroot}/%{perl_vendorarch} -name .packlist |xargs rm -f {}
+find %{buildroot}/%{perl_vendorarch} -name "*.bs" |xargs rm -f {}
+find %{buildroot} -name "perllocal.pod" |xargs rm -f {}
+find %{buildroot}/%{perl_vendorarch} -name "Nuxwdogclient.so" |xargs chmod 755
+find %{buildroot}/%{perl_vendorarch} -name "Nuxwdogclient.pm" |xargs chmod 644
 
 #get perl filelist
-find %{buildroot}/%{_libdir}/perl5 -type f -print |
+find %{buildroot}/%{perl_vendorarch} -type f -print |
     sed  "s@^%{buildroot}@@g" > %{name}-%{version}-%{release}-perl-filelist
-find %{buildroot}/%{_libdir}/perl5 -type d -name Nuxwdogclient |
+find %{buildroot}/%{perl_vendorarch} -type d -name Nuxwdogclient |
     sed  "s@^%{buildroot}@@g" >> %{name}-%{version}-%{release}-perl-filelist
 
 rm %{buildroot}/%{_libdir}/*.la
