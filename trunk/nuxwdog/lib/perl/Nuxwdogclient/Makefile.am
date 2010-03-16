@@ -18,16 +18,16 @@
 # --- END COPYRIGHT BLOCK ---
 
 all-local:
-	perl Makefile.PL && $(MAKE) -f Makefile.real all
+	perl Makefile.PL INSTALLDIRS=vendor && $(MAKE) -f Makefile.real all
 check-local:
 	$(MAKE) -f Makefile.real test
 clean-local:
 	$(MAKE) -f Makefile.real clean
      
 install-data-local:
-	$(MAKE) -f Makefile.real pure_install
+	$(MAKE) -f Makefile.real install
 install-exec-local:
-	$(MAKE) -f Makefile.real pure_install 
+	$(MAKE) -f Makefile.real install 
 uninstall-local:
 	$(MAKE) -f Makefile.real uninstall
      
