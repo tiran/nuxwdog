@@ -46,3 +46,6 @@ call_WatchdogClient_getPassword(prompt, serial)
         char * prompt
         int serial
 
+PRStatus
+call_WatchdogClient_printMessage(msg)
+        char * msg

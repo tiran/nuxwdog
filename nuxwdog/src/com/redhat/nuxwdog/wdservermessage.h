@@ -62,6 +62,8 @@ typedef enum {
 	wdmsgReconfigStatusDone,	// done sending status from reconfiguration
 	wdmsgReconfigStatusDonereply,	// reply to done sending status
 	wdmsgEmptyRead,			// Empty read receiving msg => closed socket
+	wdmsgPrintMessage,              // print message to terminal
+	wdmsgPrintMessagereply,         // reply to print message to terminal
 	wdmsgLast			// unused
 } WDMessages;
 

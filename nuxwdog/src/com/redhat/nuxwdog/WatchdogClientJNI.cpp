@@ -52,3 +52,12 @@ Java_com_redhat_nuxwdog_WatchdogClient_getPassword
     }
 }
 
+extern "C" JNIEXPORT jint JNICALL
+Java_com_redhat_nuxwdog_WatchdogClient_printMessage
+(JNIEnv *env, jclass this2, jstring msg) {
+    const char *_msg = env->GetStringUTFChars(msg, 0);
+    if (_msg == NULL) {
+        return PR_SUCCESS;
+    }
+    return WatchdogClient::printMessage(_msg);
+}

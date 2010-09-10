@@ -59,6 +59,8 @@ const char * wdmsgNames[] = {
 	"ReconfigStatusDone",
 	"ReconfigStatusDonereply",
 	"EmptyRead",
+        "PrintMessage", 
+        "PrintMessageReply",
 	"Last"
 };
 

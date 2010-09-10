@@ -48,6 +48,14 @@ JNIEXPORT jint JNICALL Java_com_redhat_nuxwdog_WatchdogClient_sendEndInit
 JNIEXPORT jstring JNICALL Java_com_redhat_nuxwdog_WatchdogClient_getPassword
   (JNIEnv *, jclass, jstring, jint);
 
+/*
+ * Class:     com_redhat_nuxwdog_WatchdogClient
+ * Method:    printMessage
+ * Signature: (Ljava/lang/String)I
+ */
+JNIEXPORT jint JNICALL Java_com_redhat_nuxwdog_WatchdogClient_printMessage
+  (JNIEnv *, jclass, jstring);
+
 #ifdef __cplusplus
 }
 #endif

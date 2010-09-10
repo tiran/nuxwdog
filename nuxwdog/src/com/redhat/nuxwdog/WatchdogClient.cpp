@@ -347,6 +347,47 @@ cleanup:
     return status;
 }
 
+PRStatus 
+WatchdogClient::printMessage(const char *message)
+{
+    PRStatus status = PR_FAILURE;
+    char *msg;
+    WDMessages msgType;
+
+    if (!WatchdogClient::isWDRunning()) {
+        status = PR_SUCCESS;
+        goto cleanup;
+    }
+
+    if (!WatchdogClient::wdMsg_) {
+        printf("Failure: WatchdogClient incorrectly initialized\n");
+        goto cleanup;
+    }
+
+    if (WatchdogClient::wdMsg_->SendToWD(wdmsgPrintMessage, message) < 0) {
+        printf("Failure: Error sending message to watchdog in printMessage");
+        goto cleanup;
+    }
+
+    msg = WatchdogClient::wdMsg_->RecvFromWD();
+    msgType = WatchdogClient::wdMsg_->getLastMsgType();
+    if (msgType != wdmsgPrintMessagereply) {
+        printf("Failure: Error receiving response from watchdog in printMessage\n");
+        goto cleanup;
+    }
+    if (msg != NULL) {
+        printf("Failure: WatchdogClient - non-empty print message response\n");
+        goto cleanup;
+    }
+
+    status = PR_SUCCESS;
+cleanup:
+    if (status == PR_FAILURE)
+        printf("Failure: WatchdogClient - sendPrintMessage failed\n");
+    return status;
+}
+
+
 PRStatus
 WatchdogClient::sendTerminate(void)
 {
@@ -511,3 +552,6 @@ char * cpp_call_WatchdogClient_getPassword(char *prompt, int serial) {
 }
 
 
+PRStatus cpp_call_WatchdogClient_printMessage(char *msg) {
+    return WatchdogClient::printMessage(msg);
+}
