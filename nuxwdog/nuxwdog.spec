@@ -18,7 +18,7 @@
 
 Name:           nuxwdog
 Version:        1.0.0
-Release:        2%{?dist}
+Release:        5%{?dist}
 Summary:        nuxwdog watchdog server
 License:        GPLv2 with exceptions
 Group:          System Environment/Libraries
@@ -171,6 +171,10 @@ rm -rf ${RPM_BUILD_ROOT}
 
 
 %changelog
+* Fri Sep 10 2010 Ade Lee <alee@redhat.com> 1.0.0-5
+- Bumped version to match brew builds
+- Bugzilla Bug 630115 - added printMessage() method
+ 
 * Thu Feb 11 2010 Ade Lee <alee@redhat.com> 1.0.0-2
 - Initial version in separated repo.
 
