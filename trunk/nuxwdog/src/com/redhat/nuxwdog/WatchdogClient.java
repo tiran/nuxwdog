@@ -61,6 +61,7 @@ public class WatchdogClient {
     public static native int init();
     public static native int sendEndInit(int numprocs);
     public static native String getPassword(String prompt, int serial);
+    public static native int printMessage(String msg);
 
 }
 

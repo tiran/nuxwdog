@@ -33,3 +33,7 @@ char * call_WatchdogClient_getPassword(char *prompt, int serial) {
     return cpp_call_WatchdogClient_getPassword(prompt, serial);
 }
 
+PRStatus call_WatchdogClient_printMessage(char *msg) {
+    return cpp_call_WatchdogClient_printMessage(msg);
+}
+

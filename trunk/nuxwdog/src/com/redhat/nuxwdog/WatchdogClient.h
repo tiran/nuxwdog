@@ -178,6 +178,11 @@
          */
         static int getFD(void);
 
+        /**
+         * Print message on terminal
+         */
+        static PRStatus printMessage(const char *msg);
+
     private:
 
         /**
@@ -237,11 +242,15 @@ extern PRStatus cpp_call_WatchdogClient_sendEndInit(int numProcs);
 
 extern char * cpp_call_WatchdogClient_getPassword(char *prompt, int serial);
 
+extern PRStatus cpp_call_WatchdogClient_printMessage(char *msg);
+
 extern PRStatus call_WatchdogClient_init();
 
 extern PRStatus call_WatchdogClient_sendEndInit(int numProcs);
 
 extern char * call_WatchdogClient_getPassword(char *prompt, int serial);
+
+extern PRStatus call_WatchdogClient_printMessage(char *msg);
 
 #ifdef __cplusplus
 }

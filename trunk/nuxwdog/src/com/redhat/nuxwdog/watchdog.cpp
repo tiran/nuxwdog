@@ -578,6 +578,12 @@ void process_server_messages(int nmessages, int server_starts)
 			if (wdSM->SendToServer(wdmsgGetPWDreply, pwd_result) == 0)
                             watchdog_error("GETPWD: error communicating with server");
 			break;
+                    case wdmsgPrintMessage:
+                        // print msgString to stdout 
+                        fprintf(stdout, "%s\n", msgstring);
+                        if (wdSM->SendToServer(wdmsgPrintMessagereply, NULL) == 0)
+                            watchdog_error("PRINTMESSAGE: error communicating with server");
+                        break;
 		    case wdmsgSetPIDpath:
 			if (pidpath == NULL) {	// First time: set it up 
 			    int rc = _watchdog_logpid(msgstring);
