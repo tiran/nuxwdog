@@ -240,7 +240,7 @@ cd ${NUXWDOGCLIENT_LIB_DIR} ; mv libnuxwdog.${DLL_SUFFIX} libnuxwdog.${DLL_SUFFI
 cd ${NUXWDOGCLIENT_JAR_DIR} ; mv nuxwdog.jar nuxwdog-${VERSION}.jar
 
 # strip symbolic information from libraries
-cd ${NUXWDOGCLIENT_LIB_DIR} ; strip libnuxwdog.${DLL_SUFFIX}.${VERSION}
+#cd ${NUXWDOGCLIENT_LIB_DIR} ; strip libnuxwdog.${DLL_SUFFIX}.${VERSION}
 
 
 ###############################################################################
