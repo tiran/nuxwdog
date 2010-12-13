@@ -1,17 +1,14 @@
 Nuxwdogclient version 0.01
 =========================
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+This module provides a Perl interface into the nuxwdog client C library.
+As such, it requires the nuxwdog rpm (which contains the C/C++ nuxwdog
+server and client libraries) to be installed in order to execute correctly.
 
-A README file is required for CPAN modules since CPAN extracts the
-README file from a module distribution so that people browsing the
-archive can use it get an idea of the modules uses. It is usually a
-good idea to provide version information here so that people can
-decide whether fixes for the module are worth downloading.
-
+The module comprises a Perl Extension module and a C shared library to 
+make the relevant C calls into libnuxwdog.so. The module is compiled using
+ExtUtils::MakeMaker.
+  
 INSTALLATION
 
 To install this module type the following:
@@ -25,16 +22,12 @@ DEPENDENCIES
 
 This module requires these other modules and libraries:
 
-  blah blah blah
+libnuxwdog.so.0
 
 COPYRIGHT AND LICENCE
 
-Put the correct copyright and licence information here.
+This program is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.
 
-Copyright (C) 2009 by builder
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.10.0 or,
-at your option, any later version of Perl 5 you may have available.
-
-
+Copyright (C) 2009 Red Hat, Inc.
+All rights reserved.

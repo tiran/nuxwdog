@@ -1,19 +1,7 @@
 #
 # --- BEGIN COPYRIGHT BLOCK ---
-# This library is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Lesser General Public
-# License as published by the Free Software Foundation;
-# version 2.1 of the License.
-#
-# This library is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public
-# License along with this library; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor,
-# Boston, MA  02110-1301  USA
+# This program is free software; you can redistribute it and/or
+# modify it under the same terms as Perl itself.
 #
 # Copyright (C) 2009 Red Hat, Inc.
 # All rights reserved.
@@ -111,11 +99,10 @@ alee, E<lt>alee@redhat.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2009 by builder
+This program is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.10.0 or,
-at your option, any later version of Perl 5 you may have available.
-
+Copyright (C) 2009 Red Hat, Inc.
+All rights reserved.
 
 =cut

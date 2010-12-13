@@ -1,24 +1,11 @@
 #
 # --- BEGIN COPYRIGHT BLOCK ---
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; version 2 of the License.
+# This program is free software; you can redistribute it and/or
+# modify it under the same terms as Perl itself.
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along
-# with this program; if not, write to the Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#
-# Copyright (C) 2007 Red Hat, Inc.
+# Copyright (C) 2009 Red Hat, Inc.
 # All rights reserved.
 # --- END COPYRIGHT BLOCK ---
-#
-#
-#
 #
 
 use ExtUtils::MakeMaker;
@@ -28,11 +15,11 @@ WriteMakefile(
     NAME              => 'Nuxwdogclient',
     MAKEFILE          => 'Makefile.real',
     VERSION_FROM      => 'lib/Nuxwdogclient.pm', # finds $VERSION
+    LIBS              => ['-L../../../.libs -lnuxwdog'], # e.g., '-lm'
     PREREQ_PM         => {}, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/Nuxwdogclient.pm', # retrieve abstract from module
        AUTHOR         => 'builder <builder@localdomain>') : ()),
-    LIBS              => ['-lnuxwdog'], # e.g., '-lm'
     DEFINE            => '', # e.g., '-DHAVE_SOMETHING'
     INC               => '-I.', # e.g., '-I. -I/usr/include/other'
 	# Un-comment this if you add C files to link with later:

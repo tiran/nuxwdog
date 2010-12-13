@@ -22,6 +22,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS =  . lib/perl/Nuxwdogclient
+
 #------------------------
 # Compiler Flags
 #------------------------
@@ -133,3 +134,8 @@ nuxwdog_LDADD = $(NSPR_LINK) $(LIBCSTD) $(LIBCRUN) $(SELINUX_LINK)
 #
 #////////////////////////////////////////////////////////////////
 
+#------------------------
+# Man pages 
+#------------------------
+man_MANS = src/doc/nuxwdog.1
+EXTRA_DIST = src/doc/nuxwdog.1
