@@ -1,6 +1,6 @@
 Name:           nuxwdog
 Version:        1.0.0
-Release:        10%{?dist}
+Release:        13%{?dist}
 Summary:        Watchdog server to start and stop processes, and prompt for passwords
 # The entire source code is LGPLv2 except for the perl module, which is GPL+ or Artistic
 License:        LGPLv2 and (GPL+ or Artistic)
@@ -18,10 +18,16 @@ BuildRequires:  libselinux-devel
 BuildRequires:  perl(ExtUtils::MakeMaker)
 
 Requires:       nss
+Obsoletes:      nuxwdog-client
+Obsoletes:      nuxwdog-client-perl
 
 Source0:        https://fedorahosted.org/released/nuxwdog/%{name}-%{version}.tar.gz
 
 %{?perl_default_filter}
+
+%if 0%{?rhel}
+ExcludeArch: ppc ppc64 s390 s390x
+%endif
 
 %description
 The nuxwdog package supplies the nuxwdog watchdog daemon, 
@@ -33,6 +39,7 @@ interact with the nuxwdog watchdog daemon.
 Group:        Development/Libraries
 Summary:      Development files for the Nuxwdog Watchdog
 Requires:     %{name} = %{version}-%{release}
+Obsoletes:    nuxwdog-client-devel
 
 %description devel
 The nuxwdog-devel package contains the header files needed to build clients
@@ -121,6 +128,15 @@ rm -rf %{buildroot}
 %{_jnidir}/*
 
 %changelog
+* Wed Dec 16 2010 Ade Lee <alee@redhat.com> 1.0.0-13
+- Resolves: #643546 - [RFE] Add nuxwdog to RHEL.
+
+* Wed Dec 15 2010 Ade Lee <alee@redhat.com> 1.0.0-12
+- Resolves: #643546 - [RFE] Add nuxwdog to RHEL. 
+
+* Wed Dec 15 2010 Ade Lee <alee@redhat.com> 1.0.0-11
+- Exclude arches for which there is no java
+
 * Wed Dec 8 2010 Ade Lee <alee@redhat.com> 1.0.0-10
 - Fixed copyright notices
 - Removed versioning for requires
