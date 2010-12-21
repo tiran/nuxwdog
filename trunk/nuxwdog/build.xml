@@ -242,7 +242,6 @@
             <zipfileset dir="."
                         filemode="644"
                         prefix="${src.dist.name}">
-                <include name="${specfile}"/>
                 <include name="LICENSE"/>
                 <include name="Makefile.*"/>
                 <include name="aclocal.m4"/>
@@ -279,7 +278,6 @@
             <tarfileset dir="."
                         mode="644"
                         prefix="${src.dist.name}">
-                <include name="${specfile}"/>
                 <include name="LICENSE"/>
                 <include name="Makefile.*"/>
                 <include name="aclocal.m4"/>

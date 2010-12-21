@@ -67,9 +67,11 @@
         <echo message="Creating '${product.name}' RPM directories ..."/>
         <mkdir dir="${release.root}/dist/rpmpkg"/>
         <mkdir dir="${release.root}/dist/rpmpkg/SOURCES"/>
+        <copy  file="${top.dir}/${release.root}/dist/source/${product.name}-${version}.tar.gz" todir="${release.root}/dist/rpmpkg/SOURCES"/>
         <mkdir dir="${release.root}/dist/rpmpkg/RPMS"/>
         <mkdir dir="${release.root}/dist/rpmpkg/SRPMS"/>
         <mkdir dir="${release.root}/dist/rpmpkg/SPECS"/>
+        <copy  file="${product.name}.spec" todir="${release.root}/dist/rpmpkg/SPECS"/>
         <mkdir dir="${release.root}/dist/rpmpkg/BUILD"/>
         <echo message="Completed creating '${product.name}' RPM directories."/>
 
@@ -78,8 +80,8 @@
               dir="${release.root}">
             <arg value="--define"/>
             <arg value="_topdir ${top.dir}/${release.root}/dist/rpmpkg"/>
-            <arg value="-ta"/>
-            <arg value="${top.dir}/${release.root}/dist/source/${product.name}-${version}.tar.gz"/>
+            <arg value="-ba"/>
+            <arg value="${release.root}/dist/rpmpkg/SPECS/${product.name}.spec"/>
         </exec>
         <echo message="Completed building '${product.name}' RPMS and SRPMS."/>
 
