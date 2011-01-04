@@ -24,6 +24,18 @@
 #include <stdio.h>
 #include <string.h>
 #include <termios.h>
+#include <errno.h>
+#include "config.h"
+#include "wdlog.h"
+
+#ifdef USE_KEYRING
+#include <sys/types.h>
+extern "C" {
+    #include <keyutils.h>
+}
+#endif
+
+#define KEY_PREFIX "nuxwdog:"
 
 static void echoOff(int fd)
 {
@@ -59,54 +71,28 @@ struct pwddef_s {
     char *pwdname;
     pwdenc_t pwdvalue;
     int serial;
+#ifdef USE_KEYRING
+    key_serial_t pwdserial;
+    long pwdlen;
+#endif
 };
 
 static pwddef_t *pwdlist = 0;
 
 
 /*
- * poor man's cipher block chaining encryption
- * this is NOT secure in any way, but still way better than storing
- * things in clear text.
+ * This code used to contain a poor man's cipher block chaining encryption
+ * which was not secure in any way.  We have chosen to store the passwords in
+ * the kernel keyring instead.  The function below is simply a passthrough.
+ * At a later point, it might be replaced with SDR code.
  */
 char *
 wd_pwd_obscurify(char *src, char *dest, int len, int decrypt)
 {
-    unsigned char *res, *d, *s;
-    unsigned char chain;
-    // random bits to mask any symmetry and periods
-    // got these from calling md5sum on the contents of some NIS maps
-    // you cannot really call this a key, so:
-    static unsigned char obscurificator[] =
-        { 0x5e, 0xe5, 0x81, 0xeb, 0xd8, 0x55, 0x3f, 0x2c,
-          0x92, 0xe8, 0xd2, 0xdd, 0x76, 0x48, 0xc2, 0x04, 
-          0xc7, 0x5c, 0x00, 0xbf, 0x50, 0x5c, 0xbf, 0xf1,
-          0xbd, 0x48, 0x21, 0x79, 0xe1, 0x17, 0xec, 0x63,
-          0x5b, 0x6c, 0x05, 0xed, 0x5d, 0xc6, 0xc6, 0x1c,
-          0xef, 0xc3, 0xe6, 0x12, 0xeb, 0xf9, 0x06, 0xc1,
-          0x49, 0x83, 0xe6, 0x8d, 0x16, 0x23, 0x70, 0xa3,
-          0x22, 0x21, 0x1e, 0x10, 0x6c, 0x8c, 0xda, 0xba };
-
-    // allocate one byte more because we want to null-terminate the thing
-    // when we're decypting
-    if ((res = (unsigned char *)malloc(len + 1)) == NULL)
-        return NULL;
-    
-    s = (unsigned char *)src;
-    d = (unsigned char *)dest;
-    chain = 0;                          /* initialization vector for CBC */
-    while (len--) {
-        /*
-         * 11 must be relatively prime to sizeof(obscurificator),
-         * if so, we're going to hit all the values from
-         * 0 .. sizeof(obscurificator)
-         */
-        *d = *s ^ chain ^ obscurificator[(len * 11) % sizeof(obscurificator)];
-        chain = (decrypt) ? *s : *d;    /* chain feedback - we always feed back ciphertext */
-        s++; d++;
-    }
-    return (char *)res;
+    snprintf(dest, len, "%s", src);
+    return dest;
 }
+
 
 void
 watchdog_pwd_encrypt(char *pwdvalue, pwdenc_t *pwdcrypt)
@@ -157,7 +143,56 @@ watchdog_pwd_free(pwdenc_t *pwdcrypt)
         memset((void *)pwdcrypt, 0, sizeof(pwdenc_t));
     }
 }
-        
+
+#ifdef USE_KEYRING        
+int
+watchdog_pwd_lookup(char *pwdname, int serial, char **pwdvalue)
+{
+    pwddef_t *pwdp;
+    long keysize;
+    int ret;
+
+    *pwdvalue = 0;
+
+    watchdog_log(LOG_INFO, "Using keyring version of lookup %s\n", pwdname);
+
+    for (pwdp = pwdlist; pwdp != NULL; pwdp = pwdp->pwdnext) {
+
+        if (!strcmp(pwdname, pwdp->pwdname)) {
+            
+            //
+            // if we're asking for a higher serial number than we have
+            // then the password must be wrong - we need to fail the
+            // lookup to cause a reprompt (or a failure if we cannot
+            // prompt anymore due to loss of ther terminal).
+            //
+            if (serial > pwdp->serial) {
+                //watchdog_log(LOG_INFO, "failing serial test serial: %d, pwdp->serial %d\n", serial, pwdp->serial);
+                return 0;
+            }
+
+            *pwdvalue = (char *) malloc(pwdp->pwdlen);
+            keysize = keyctl_read(pwdp->pwdserial, (char *) *pwdvalue,
+                pwdp->pwdlen);
+
+            if (keysize == -1) {
+                ret = errno;
+                watchdog_log(LOG_ERR, "keyctl read failed  [%d][%s].\n", ret, strerror(ret));
+                if (*pwdvalue) free(*pwdvalue);
+                return 0;
+            } else if (keysize != pwdp->pwdlen) {
+                watchdog_log(LOG_ERR, "keyctl_read returned key with wrong size, "
+                    "expect [%ld] got [%ld].\n", pwdp->pwdlen, keysize);
+                return 0;
+            }
+            return 1;
+        }
+    }
+
+    return 0;
+}
+#else
+ 
 int
 watchdog_pwd_lookup(char *pwdname, int serial, char **pwdvalue)
 {
@@ -186,6 +221,72 @@ watchdog_pwd_lookup(char *pwdname, int serial, char **pwdvalue)
     return 0;
 }
 
+#endif
+
+#ifdef USE_KEYRING
+int watchdog_pwd_save(char *pwdname, int serial, char *pwdvalue)
+{
+    pwddef_t *pwdp;
+    int rv = 0;
+
+    watchdog_log(LOG_INFO, "Using keyring version of save %s\n", pwdname);
+
+    if (strlen(pwdvalue) == 0) {
+       watchdog_log(LOG_INFO, "password invalid. length must be greater than 0\n");
+       return 0;
+    }
+
+    for (pwdp = pwdlist; pwdp != NULL; pwdp = pwdp->pwdnext) {
+        if (!strcmp(pwdname, pwdp->pwdname)) {
+
+            /*
+             * Already have this password saved, so server must be
+             * reprompting.  Replace the old value with the new value.
+             */
+            char *keyname = (char *) malloc(strlen(pwdname) + strlen(KEY_PREFIX));
+            sprintf(keyname, "%s%s", KEY_PREFIX, pwdname);
+            pwdp->pwdserial = add_key("user", keyname, (void *) pwdvalue,
+                strlen(pwdvalue), KEY_SPEC_PROCESS_KEYRING);
+
+            if (keyname) free(keyname);
+
+            if (pwdp->pwdserial == -1) {
+                rv = errno;
+                watchdog_log(LOG_ERR, "add key failed [%d][%s].\n", rv, strerror(rv));
+                return 0;
+            }
+            pwdp->pwdlen = strlen(pwdvalue);
+            pwdp->serial = serial;
+            return 1;
+        }
+    }
+    if ((pwdp = (pwddef_t *)malloc(sizeof(pwddef_t))) == NULL)
+        return 0;
+
+    pwdp->pwdname = strdup(pwdname);
+    pwdp->serial = serial;
+
+    char *keyname = (char *) malloc(strlen(pwdname) + strlen(KEY_PREFIX));
+    sprintf(keyname, "%s%s", KEY_PREFIX, pwdname);
+    pwdp->pwdserial = add_key("user", keyname, (void *) pwdvalue,
+        strlen(pwdvalue), KEY_SPEC_PROCESS_KEYRING);
+    if (pwdp->pwdserial == -1) {
+        rv = errno;
+        watchdog_log(LOG_ERR, "add key failed [%d][%s].\n", rv, strerror(rv));
+        if (pwdp->pwdname) free(pwdp->pwdname);
+        free(pwdp);
+    } else {
+        pwdp->pwdnext = pwdlist;
+        pwdlist = pwdp;
+        pwdp->pwdlen = strlen(pwdvalue);
+        rv = 1;
+    }
+    if (keyname) free(keyname);
+    return rv;
+}
+
+#else
+
 int
 watchdog_pwd_save(char *pwdname, int serial, char *pwdvalue)
 {
@@ -212,19 +313,22 @@ watchdog_pwd_save(char *pwdname, int serial, char *pwdvalue)
         return 0;
 
     pwdp->pwdname = strdup(pwdname);
-    watchdog_pwd_encrypt(pwdvalue, &pwdp->pwdvalue);
     pwdp->serial = serial;
+
+    watchdog_pwd_encrypt(pwdvalue, &pwdp->pwdvalue);
     if (pwdp->pwdvalue.len) {
         pwdp->pwdnext = pwdlist;
         pwdlist = pwdp;
         rv = 1;
     } else {
         /* watchdog_pwd_encrypt failed */
+
         free(pwdp);
         rv = 0;
     }
     return rv;
 }
+#endif
 
 int
 watchdog_pwd_prompt(const char *prompt, int serial, char **pwdvalue)

@@ -1,6 +1,6 @@
 Name:           nuxwdog
 Version:        1.0.0
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        Watchdog server to start and stop processes, and prompt for passwords
 # The entire source code is LGPLv2 except for the perl module, which is GPL+ or Artistic
 License:        LGPLv2 and (GPL+ or Artistic)
@@ -128,6 +128,11 @@ rm -rf %{buildroot}
 %{_jnidir}/*
 
 %changelog
+* Thu Dec 23 2010 Ade Lee <alee@redhat.com> 1.0.0-14
+- Resolves: #643546 - [RFE] Add nuxwdog to RHEL.
+- Remove old encryption scheme
+- Store passwords in kernel keyring
+
 * Wed Dec 16 2010 Ade Lee <alee@redhat.com> 1.0.0-13
 - Resolves: #643546 - [RFE] Add nuxwdog to RHEL.
 

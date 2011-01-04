@@ -253,6 +253,7 @@ AM_CONDITIONAL(SOLARIS,test "$platform" = "solaris")
 # Check for library dependencies
 m4_include(m4/nuxwdog.m4)
 m4_include(m4/nspr.m4)
+m4_include(m4/libkeyutils.m4)
 
 # write out paths for binary components
 AC_SUBST(jni_inc)
