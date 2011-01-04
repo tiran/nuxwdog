@@ -85,6 +85,7 @@ wdLSmanager	LS;
 char errmsgstr[1024];
 
 #define RESTART_ON_EXIT_CODE    40
+#define NON_EMPTY_MESSAGE "send-non-empty-message"
 
 //
 // The unix domain socket connection (to the primordial process) that 
@@ -573,8 +574,11 @@ void process_server_messages(int nmessages, int server_starts)
 				// check error code??
 			    }	// otherwise can fall through without prompting
 			}
-			if ((pwd_result==NULL) || (strlen(pwd_result)==0) || (_watchdog_server_init_done==1))
-                            sprintf(pwd_result, "send-non-empty-message");
+			if ((pwd_result==NULL) || (strlen(pwd_result)==0) || (_watchdog_server_init_done==1)) {
+                            if (pwd_result != NULL) free(pwd_result);
+                            pwd_result = (char *) malloc(strlen(NON_EMPTY_MESSAGE) + 1);
+                            sprintf(pwd_result, "%s", NON_EMPTY_MESSAGE);
+                        }
 			if (wdSM->SendToServer(wdmsgGetPWDreply, pwd_result) == 0)
                             watchdog_error("GETPWD: error communicating with server");
 			break;
@@ -751,7 +755,6 @@ int main(int argc, char **argv, char **envp)
     int ver=0;
     int server_starts;
     int server_stat;
-    int server_background = 0;
     char *server_exe = NULL;
     char *server_args = NULL;
     char *conffile = NULL;

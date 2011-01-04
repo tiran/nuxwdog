@@ -68,7 +68,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
 	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
 	$(top_srcdir)/m4/nuxwdog.m4 $(top_srcdir)/m4/nspr.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/libkeyutils.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -135,7 +135,8 @@ am_nuxwdog_OBJECTS =  \
 	src/com/redhat/nuxwdog/nuxwdog-wdutils.$(OBJEXT)
 nuxwdog_OBJECTS = $(am_nuxwdog_OBJECTS)
 nuxwdog_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 SCRIPTS = $(nuxwdog_jar_SCRIPTS)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -260,6 +261,7 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+KEYUTILS_LIBS = @KEYUTILS_LIBS@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBCRUN = @LIBCRUN@
@@ -398,6 +400,7 @@ AM_CPPFLAGS = $(DEBUG_DEFINES) $(NUXWDOG_INCLUDES) $(PATH_DEFINES)
 #------------------------
 NSPR_LINK = @nspr_lib@ -lplc4 -lplds4 -lnspr4
 SELINUX_LINK = -lselinux
+KEYUTILS_LINK = -lkeyutils
 
 #------------------------
 # Build Products
@@ -457,7 +460,7 @@ nuxwdog_SOURCES = src/com/redhat/nuxwdog/watchdog.cpp \
 			src/com/redhat/nuxwdog/wdutils.cpp 
 
 nuxwdog_CPPFLAGS = $(AM_CPPFLAGS) @nspr_inc@
-nuxwdog_LDADD = $(NSPR_LINK) $(LIBCSTD) $(LIBCRUN) $(SELINUX_LINK)
+nuxwdog_LDADD = $(NSPR_LINK) $(LIBCSTD) $(LIBCRUN) $(SELINUX_LINK) $(KEYUTILS_LINK)
 
 #////////////////////////////////////////////////////////////////
 #

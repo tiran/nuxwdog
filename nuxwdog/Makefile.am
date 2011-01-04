@@ -52,6 +52,7 @@ endif
 #------------------------
 NSPR_LINK = @nspr_lib@ -lplc4 -lplds4 -lnspr4
 SELINUX_LINK = -lselinux
+KEYUTILS_LINK = -lkeyutils
 LIBSOCKET=@LIBSOCKET@
 LIBNSL=@LIBNSL@
 LIBDL=@LIBDL@
@@ -124,7 +125,7 @@ nuxwdog_SOURCES = src/com/redhat/nuxwdog/watchdog.cpp \
 			src/com/redhat/nuxwdog/wdlsmgr.cpp \
 			src/com/redhat/nuxwdog/wdutils.cpp 
 nuxwdog_CPPFLAGS = $(AM_CPPFLAGS) @nspr_inc@
-nuxwdog_LDADD = $(NSPR_LINK) $(LIBCSTD) $(LIBCRUN) $(SELINUX_LINK)
+nuxwdog_LDADD = $(NSPR_LINK) $(LIBCSTD) $(LIBCRUN) $(SELINUX_LINK) $(KEYUTILS_LINK)
 
 
 
