@@ -1,6 +1,6 @@
 Name:           nuxwdog
 Version:        1.0.0
-Release:        14%{?dist}
+Release:        16%{?dist}
 Summary:        Watchdog server to start and stop processes, and prompt for passwords
 # The entire source code is LGPLv2 except for the perl module, which is GPL+ or Artistic
 License:        LGPLv2 and (GPL+ or Artistic)
@@ -16,8 +16,10 @@ BuildRequires:  nss-devel
 BuildRequires:  pkgconfig
 BuildRequires:  libselinux-devel
 BuildRequires:  perl(ExtUtils::MakeMaker)
+BuildRequires:  keyutils-libs-devel
 
 Requires:       nss
+Requires:       keyutils-libs
 Obsoletes:      nuxwdog-client
 Obsoletes:      nuxwdog-client-perl
 
@@ -128,6 +130,14 @@ rm -rf %{buildroot}
 %{_jnidir}/*
 
 %changelog
+* Tue Jan 4 2011 Ade Lee <alee@redhat.com> 1.0.0-16
+- Resolves: #643546 - [RFE] Add nuxwdog to RHEL.
+- fix build problem
+
+* Tue Jan 4 2011 Ade Lee <alee@redhat.com> 1.0.0-15
+- Resolves: #643546 - [RFE] Add nuxwdog to RHEL.
+- add needed build requires, requires
+
 * Thu Dec 23 2010 Ade Lee <alee@redhat.com> 1.0.0-14
 - Resolves: #643546 - [RFE] Add nuxwdog to RHEL.
 - Remove old encryption scheme
