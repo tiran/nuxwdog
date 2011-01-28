@@ -384,7 +384,7 @@ int wdLSmanager::getNewLS(char *new_ls_name, char *new_IP, int new_port,
     if (new_fd < 0) {
         char *oserr = strerror(-new_fd);
         if (!oserr)
-            oserr = "Unknown error";
+            oserr = (char *) "Unknown error";
         if (new_IP) {
             fprintf(stderr, 
                     "startup failure: could not bind to %s:%d (%s)\n",

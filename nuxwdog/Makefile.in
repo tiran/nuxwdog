@@ -431,7 +431,7 @@ libnuxwdog_la_SOURCES = src/com/redhat/nuxwdog/WatchdogClient.cpp          \
 			src/com/redhat/nuxwdog/wdutils.cpp                 \
                         src/com/redhat/nuxwdog/WatchdogClientCFunc.c
 
-libnuxwdog_la_CPPFLAGS = $(AM_CPPFLAGS) @nspr_inc@
+libnuxwdog_la_CPPFLAGS = $(AM_CPPFLAGS) @nspr_inc@ -fno-strict-aliasing
 libnuxwdog_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(GENERIC_LIBRARY_VERSION) --release $(VERSION)
 libnuxwdog_la_LIBADD = $(NSPR_LINK) \
 	$(LIBCSTD) $(LIBCRUN)
@@ -459,7 +459,7 @@ nuxwdog_SOURCES = src/com/redhat/nuxwdog/watchdog.cpp \
 			src/com/redhat/nuxwdog/wdlsmgr.cpp \
 			src/com/redhat/nuxwdog/wdutils.cpp 
 
-nuxwdog_CPPFLAGS = $(AM_CPPFLAGS) @nspr_inc@
+nuxwdog_CPPFLAGS = $(AM_CPPFLAGS) @nspr_inc@ -fno-strict-aliasing
 nuxwdog_LDADD = $(NSPR_LINK) $(LIBCSTD) $(LIBCRUN) $(SELINUX_LINK) $(KEYUTILS_LINK)
 
 #////////////////////////////////////////////////////////////////

@@ -1,6 +1,6 @@
 Name:           nuxwdog
-Version:        1.0.0
-Release:        16%{?dist}
+Version:        1.0.1
+Release:        1%{?dist}
 Summary:        Watchdog server to start and stop processes, and prompt for passwords
 # The entire source code is LGPLv2 except for the perl module, which is GPL+ or Artistic
 License:        LGPLv2 and (GPL+ or Artistic)
@@ -25,7 +25,9 @@ Obsoletes:      nuxwdog-client-perl
 
 Source0:        https://fedorahosted.org/released/nuxwdog/%{name}-%{version}.tar.gz
 
-%{?perl_default_filter}
+# Note: there is an rpmlint warning about Nuxwdogclient.so being a private-shared-object-provide
+# This would ordinarily be fixed by calling the macro perl_default_filter, but 
+# this disables rpms file coloring and makes the package fail multilib tests.
 
 %if 0%{?rhel}
 ExcludeArch: ppc ppc64 s390 s390x
@@ -130,6 +132,10 @@ rm -rf %{buildroot}
 %{_jnidir}/*
 
 %changelog
+* Fri Jan 28 2011 Ade Lee <alee@redhat.com> 1.0.1-1
+- Resolves: #643546 - [RFE] Add nuxwdog to RHEL.
+- fix file coloring, aliasing problem
+
 * Tue Jan 4 2011 Ade Lee <alee@redhat.com> 1.0.0-16
 - Resolves: #643546 - [RFE] Add nuxwdog to RHEL.
 - fix build problem
