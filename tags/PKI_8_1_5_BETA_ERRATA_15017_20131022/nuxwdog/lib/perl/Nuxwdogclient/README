@@ -1,0 +1,33 @@
+Nuxwdogclient version 0.01
+=========================
+
+This module provides a Perl interface into the nuxwdog client C library.
+As such, it requires the nuxwdog rpm (which contains the C/C++ nuxwdog
+server and client libraries) to be installed in order to execute correctly.
+
+The module comprises a Perl Extension module and a C shared library to 
+make the relevant C calls into libnuxwdog.so. The module is compiled using
+ExtUtils::MakeMaker.
+  
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+DEPENDENCIES
+
+This module requires these other modules and libraries:
+
+libnuxwdog.so.0
+
+COPYRIGHT AND LICENCE
+
+This program is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.
+
+Copyright (C) 2009 Red Hat, Inc.
+All rights reserved.
