@@ -40,7 +40,7 @@ PKI_PRODUCT_PREFIX=""
 export PKI_PRODUCT_PREFIX
 PKI_PRODUCT="nuxwdog"
 export PKI_PRODUCT
-PKI_VERSION="1.0.1"
+PKI_VERSION="1.0.2"
 export PKI_VERSION
 
 # Set Red Hat helper variables

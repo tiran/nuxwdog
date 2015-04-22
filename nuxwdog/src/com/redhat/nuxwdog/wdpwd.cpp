@@ -171,7 +171,7 @@ watchdog_pwd_lookup(char *pwdname, int serial, char **pwdvalue)
                 return 0;
             }
 
-            *pwdvalue = (char *) malloc(pwdp->pwdlen);
+            *pwdvalue = (char *) malloc(pwdp->pwdlen + 1);
             keysize = keyctl_read(pwdp->pwdserial, (char *) *pwdvalue,
                 pwdp->pwdlen);
 
@@ -185,6 +185,7 @@ watchdog_pwd_lookup(char *pwdname, int serial, char **pwdvalue)
                     "expect [%ld] got [%ld].\n", pwdp->pwdlen, keysize);
                 return 0;
             }
+            (*pwdvalue)[keysize] = '\0';
             return 1;
         }
     }
