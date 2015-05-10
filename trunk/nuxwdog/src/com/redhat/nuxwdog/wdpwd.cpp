@@ -20,13 +20,16 @@
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <stdio.h>
 #include <string.h>
 #include <termios.h>
 #include <errno.h>
 #include "config.h"
 #include "wdlog.h"
+#include "wdsignals.h"
 
 #ifdef USE_KEYRING
 #include <sys/types.h>
@@ -40,20 +43,20 @@ extern "C" {
 static void echoOff(int fd)
 {
     if (isatty(fd)) {
-	struct termios tio;
-	tcgetattr(fd, &tio);
-	tio.c_lflag &= ~ECHO;
-	tcsetattr(fd, TCSAFLUSH, &tio);
+        struct termios tio;
+        tcgetattr(fd, &tio);
+        tio.c_lflag &= ~ECHO;
+        tcsetattr(fd, TCSAFLUSH, &tio);
     }
 }
 
 static void echoOn(int fd)
 {
     if (isatty(fd)) {
-	struct termios tio;
-	tcgetattr(fd, &tio);
-	tio.c_lflag |= ECHO;
-	tcsetattr(fd, TCSAFLUSH, &tio);
+        struct termios tio;
+        tcgetattr(fd, &tio);
+        tio.c_lflag |= ECHO;
+        tcsetattr(fd, TCSAFLUSH, &tio);
     }
 }
 
@@ -120,7 +123,7 @@ char *
 watchdog_pwd_decrypt(pwdenc_t *pwdcrypt)
 {
     if (!pwdcrypt->ptr) {
-	return NULL;
+    	return NULL;
     }
     {
         char *buf;
@@ -331,6 +334,52 @@ watchdog_pwd_save(char *pwdname, int serial, char *pwdvalue)
 }
 #endif
 
+/*
+ * is systemd running
+ */
+bool
+check_systemd_running ()
+{
+  struct stat a, b;
+
+  /* We simply test whether the systemd cgroup hierarchy is
+   * mounted */
+
+  return (lstat("/sys/fs/cgroup", &a) == 0)
+     && (lstat("/sys/fs/cgroup/systemd", &b) == 0)
+     && (a.st_dev != b.st_dev);
+
+}
+
+static bool
+watchdog_get_passwd_systemd(const char *prompt, char *input, const int capacity)
+{
+    char *cmd, *ret;
+    FILE *ask_pass_fp = NULL;
+    bool retval = false;
+
+    /* temporarily disable SIGCHLD handler */
+    disable_sigchld_for_one_signal();
+
+    cmd = ret = NULL;
+    if (asprintf(&cmd, "systemd-ask-password \"%s\"", prompt) >= 0) {
+        ask_pass_fp = popen (cmd, "re");
+        free (cmd);
+    }
+
+    if (ask_pass_fp) {
+        ret = fgets(input, capacity, ask_pass_fp);
+        pclose(ask_pass_fp);
+    }
+
+    if (ret) {
+        int len = strlen(input);
+        if (input[len - 1] == '\n') input[len - 1] = '\0';
+        return true;
+    }
+    return false;
+}
+
 int
 watchdog_pwd_prompt(const char *prompt, int serial, char **pwdvalue)
 {
@@ -339,6 +388,25 @@ watchdog_pwd_prompt(const char *prompt, int serial, char **pwdvalue)
     int infd = fileno(stdin);
     int isTTY = isatty(infd);
     int plen;
+
+    char *started_by_systemd = getenv("STARTED_BY_SYSTEMD");
+
+    if (started_by_systemd) {
+        if (!check_systemd_running()) {
+            fprintf(stderr,
+                "STARTED_BY_SYSTEMD set indicating that nuxwdog has been started by systemd, but "
+                "systemd is not running.");
+            return -1;
+        }
+
+        char pvalue[256];
+        pvalue[0] = '\0'; 
+        if (watchdog_get_passwd_systemd(prompt, pvalue, 256)) {
+            *pwdvalue = strdup(pvalue);
+            return 0;
+        }
+        return -1;
+    }
 
     /* Turn off buffering to avoid leaving password in I/O buffer */
     setbuf(stdin, NULL);
@@ -400,4 +468,3 @@ watchdog_pwd_prompt(const char *prompt, int serial, char **pwdvalue)
 
     return 0;
 }
-
