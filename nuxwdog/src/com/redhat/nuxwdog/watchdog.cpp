@@ -570,7 +570,9 @@ void process_server_messages(int nmessages, int server_starts)
 				    watchdog_error(errstr);
 				    // _watchdog_death = 1; ???
 				}
-				rv = watchdog_pwd_save(prompt, serial, pwd_result);
+                                if (pwd_result != NULL) {
+				    rv = watchdog_pwd_save(prompt, serial, pwd_result);
+                                }
 				// check error code??
 			    }	// otherwise can fall through without prompting
 			}

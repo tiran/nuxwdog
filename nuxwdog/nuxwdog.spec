@@ -1,5 +1,5 @@
 Name:           nuxwdog
-Version:        1.0.2
+Version:        1.0.3
 Release:        1%{?dist}
 Summary:        Watchdog server to start and stop processes, and prompt for passwords
 # The entire source code is LGPLv2 except for the perl module, which is GPL+ or Artistic
@@ -133,6 +133,9 @@ rm -rf %{buildroot}
 %{_jnidir}/*
 
 %changelog
+* Sun May 10 2015 Ade Lee <alee@redhat.com> 1.0.3-1
+- Add systemd support
+
 * Wed Apr 22 2015 Ade Lee <alee@redhat.com> 1.0.2-1
 - Allow passwords to be retrieved post-init phase
 - Fix null termination issue on returned stored passwords
