@@ -570,13 +570,11 @@ void process_server_messages(int nmessages, int server_starts)
 				    watchdog_error(errstr);
 				    // _watchdog_death = 1; ???
 				}
-                                if (pwd_result != NULL) {
-				    rv = watchdog_pwd_save(prompt, serial, pwd_result);
-                                }
+				rv = watchdog_pwd_save(prompt, serial, pwd_result);
 				// check error code??
 			    }	// otherwise can fall through without prompting
 			}
-			if ((pwd_result==NULL) || (strlen(pwd_result)==0)) {
+			if ((pwd_result==NULL) || (strlen(pwd_result)==0) || (_watchdog_server_init_done==1)) {
                             if (pwd_result != NULL) free(pwd_result);
                             pwd_result = (char *) malloc(strlen(NON_EMPTY_MESSAGE) + 1);
                             sprintf(pwd_result, "%s", NON_EMPTY_MESSAGE);

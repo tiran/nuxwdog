@@ -37,8 +37,6 @@ extern int _watchdog_server_start_error;
 
 static int watchdog_pending_signal = 0;
 
-static struct sigaction prev_sigchld_handler;
-
 static void
 sig_term(int sig)
 {
@@ -219,25 +217,3 @@ watchdog_wait_signal()
         sigsuspend(&holdset);
     }
 }
-
-static void
-temp_sig_chld(int sig)
-{
-    sigaction(SIGCHLD, &prev_sigchld_handler, NULL);
-}
-
-void
-disable_sigchld_for_one_signal()
-{
-    struct sigaction sa;
-    sa.sa_handler = temp_sig_chld;
-    sigemptyset(&sa.sa_mask);
-    sigaddset(&sa.sa_mask, SIGCHLD);
-#ifdef SA_NOCLDSTOP
-    sa.sa_flags = SA_NOCLDSTOP;
-#else
-    sa.sa_flags = 0;
-#endif /* SA_NOCLDSTOP */
-    sigaction(SIGCHLD, &sa, &prev_sigchld_handler);
-}
-

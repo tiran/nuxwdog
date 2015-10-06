@@ -1,5 +1,5 @@
 Name:           nuxwdog
-Version:        1.0.3
+Version:        1.0.1
 Release:        1%{?dist}
 Summary:        Watchdog server to start and stop processes, and prompt for passwords
 # The entire source code is LGPLv2 except for the perl module, which is GPL+ or Artistic
@@ -101,7 +101,6 @@ cd %{buildroot}/%{_jnidir}
 ln -s %{_libdir}/nuxwdog-jni/nuxwdog-%{version}.jar nuxwdog.jar
 rm -rf %{buildroot}%{_usr}/jars
 rm -rf %{buildroot}%{_usr}/doc
-rm -rf %{buildroot}%{_usr}/share/doc/nuxwdog-%{version}
 
 %post -p /sbin/ldconfig 
 
@@ -133,13 +132,6 @@ rm -rf %{buildroot}
 %{_jnidir}/*
 
 %changelog
-* Sun May 10 2015 Ade Lee <alee@redhat.com> 1.0.3-1
-- Add systemd support
-
-* Wed Apr 22 2015 Ade Lee <alee@redhat.com> 1.0.2-1
-- Allow passwords to be retrieved post-init phase
-- Fix null termination issue on returned stored passwords
-
 * Fri Jan 28 2011 Ade Lee <alee@redhat.com> 1.0.1-1
 - Resolves: #643546 - [RFE] Add nuxwdog to RHEL.
 - fix file coloring, aliasing problem
@@ -157,7 +149,7 @@ rm -rf %{buildroot}
 - Remove old encryption scheme
 - Store passwords in kernel keyring
 
-* Thu Dec 16 2010 Ade Lee <alee@redhat.com> 1.0.0-13
+* Wed Dec 16 2010 Ade Lee <alee@redhat.com> 1.0.0-13
 - Resolves: #643546 - [RFE] Add nuxwdog to RHEL.
 
 * Wed Dec 15 2010 Ade Lee <alee@redhat.com> 1.0.0-12
