@@ -1,0 +1,233 @@
+'\" t
+.\"     Title: nuxwdog
+.\"    Author: [see the "Authors" section]
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: November 29, 2010
+.\"    Manual: PKI Tools
+.\"    Source: nuxwdog 1
+.\"  Language: English
+.\"
+.TH "NUXWDOG" "1" "November 29, 2010" "nuxwdog 1" "PKI Tools"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+nuxwdog \- Provides a simple watchdog process that can be used to start, stop, monitor, or reconfigure a server process\&.
+.SH "SYNOPSIS"
+.HP \w'\fBnuxwdog\fR\ 'u
+\fBnuxwdog\fR \-f\ \fIconfiguration_file\fR [\-i]
+.SH "DESCRIPTION"
+.PP
+
+\fBnuxwdog\fR
+is a watchdog daemon that builds on the
+\fBuxwdog\fR
+service that is part of the Netscape Enterprise Server (NES)\&.
+\fBnuxwdog\fR
+can start, stop, monitor, and reconfigure server programs, depending on the parameters passed to it in its configuration file\&.
+\fBnuxwdog\fR
+opens a Unix domain socket to accept requests from any server process it is managing\&. Optionally,
+\fBnuxwdog\fR
+can be configured to communicate only with clients that are descendants of the
+\fBnuxwdog\fR
+process, limiting an avenue of potential access to any servers managed by the watchdog\&.
+.PP
+Some servers require a high\-level of security to protect their data or operations, which means (for example) that they cannot store plaintext passwords in a password file to allow the server to be started automatically\&.
+\fBnuxwdog\fR
+can be configured to prompt for server passwords when a server first starts and then caches those passwords so that
+\fBnuxwdog\fR
+can restart the server without intervention if the server crashes\&.
+.PP
+To make it easy for clients to communicate with
+\fBnuxwdog\fR, a C/C++ shared library is provided with the
+\fBnuxwdog\fR
+source code (libnuxwdog\&.so)\&. Additionally,
+\fBnuxwdog\fR
+provides JNI interfaces and Perl bindings to the
+libnuxwdog\&.so
+library, so that calls can be made from Java and Perl programs\&. For more information on this library and the client interfaces, see
+\m[blue]\fBhttps://fedorahosted\&.org/nuxwdog/wiki/HOWTO\fR\m[]\&.
+.PP
+
+\fBnuxwdog\fR
+is used by Dogtag PKI to monitor and manage the subsystem server processes for Java, Tomcat, and Apache servers\&.
+.SH "OPTIONS"
+.PP
+\-f \fIconfiguration_file\fR
+.RS 4
+Passes the configuration file for the service which runs the subsystem\&.
+\fIWith Dogtag PKI\&.\fR
+For the CA, OCSP, TKS, and DRM, this is for the Java process\&. For the TPS, this is for the Apache process\&.
+.RE
+.PP
+\-i
+.RS 4
+Runs the nuxwdog process in interactive mode and keeps nuxwdog open in the foreground instead of running it as a daemon in the background\&.
+.RE
+.SH "CONFIGURATION FILE PARAMETERS AND EXAMPLES"
+.PP
+ExeFile
+.RS 4
+Gives the full path to the executable to be started\&.
+.RE
+.PP
+ExeArgs
+.RS 4
+Passes any arguments to the executable\&. The first argument must be the full path to the executable (the same as the value in
+\fBExeFile\fR)\&.
+.RE
+.PP
+TmpDir
+.RS 4
+Gives the full path to the executable to be started\&.
+.RE
+.PP
+ChildSecurity
+.RS 4
+Sets whether the child server process should only allow requests from a parent (where
+\fBnuxwdog\fR
+is the parent)\&.
+\fBnuxwdog\fR
+checks the process ID for any client which sends a request to the Unix domain socket and drops any message where the client is not a descendant of the
+\fBnuxwdog\fR
+process\&. To allow any request, set this to
+\fB0\fR; to allow only parent or ancestor requests, sets this to
+\fB1\fR\&.
+.RE
+.PP
+ExeOut
+.RS 4
+Gives the file to write stdout for the server to be started\&.
+.RE
+.PP
+ExeErr
+.RS 4
+Gives the file to write stderr for the server to be started\&.
+.RE
+.PP
+ExeBackground
+.RS 4
+Sets whether to run the server and the
+\fBnuxwdog\fR
+processes in the background in daemon mode after the watchdog is initialized\&. Setting this to
+\fB1\fR
+enables daemon mode, while
+\fB0\fR
+keeps this in the foreground\&.
+.RE
+.PP
+PidFile
+.RS 4
+Gives the PID file to use to store the
+\fBnuxwdog\fR
+PID\&.
+.RE
+.PP
+ChildPidFile
+.RS 4
+Gives the PID file to use to store the PID of the server process managed by
+\fBnuxwdog\fR\&.
+.RE
+.PP
+ExeContext
+.RS 4
+Sets the SELinux context in which to start the server process\&.
+.RE
+.PP
+
+\fBnuxwdog\fR
+can be used to manage many types of server processes\&. For Dogtag PKI, it manages Java, Tomcat, and Apache servers\&. For the Dogtag PKI Certificate Authority, a Java\-based subsystem with a Tomcat web service, the configuration file identifies the appropriate JRE and class paths, along with setting the output, error, and PID files\&. (The
+\fIExeArgs\fR
+argument should be all on one line\&.)
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+ExeFile /usr/lib/jvm/jre/bin/java
+ExeArgs /usr/lib/jvm/jre/bin/java  
+        \-Djava\&.endorsed\&.dirs=/usr/share/tomcat5/common/endorsed
+        \-classpath :/usr/lib/jvm/jre/lib/rt\&.jar
+           :/usr/share/java/commons\-collections\&.jar
+           :/usr/share/tomcat5/bin/bootstrap\&.jar
+           :/usr/share/tomcat5/bin/commons\-logging\-api\&.jar
+           :/usr/share/java/mx4j/mx4j\-impl\&.jar
+           :/usr/share/java/mx4j/mx4j\-jmx\&.jar
+           :/usr/share/tomcat5/common/lib/nuxwdog\&.jar
+        \-Dcatalina\&.base=/var/lib/pki\-ca2
+        \-Dcatalina\&.home=/usr/share/tomcat5
+        \-Djava\&.io\&.tmpdir=/usr/share/tomcat5/temp org\&.apache\&.catalina\&.startup\&.Bootstrap
+        start
+TmpDir /var/lib/pki\-ca2/logs/pids 
+ChildSecurity 1
+ExeOut /var/lib/pki\-ca2/logs/catalina\&.out
+ExeErr /var/lib/pki\-ca2/logs/catalina\&.out
+ExeBackground 1
+PidFile /var/lib/pki\-ca2/logs/wd\-pki\-ca2\&.pid
+ChildPidFile /var/run/pki\-ca2\&.pid
+.fi
+.if n \{\
+.RE
+.\}
+.PP
+For Dogtag PKI, the Token (smart card) Processing System uses an Apache\-based server\&. This example also sets the SELinux context,
+\fBpki_tps_t\fR, used by the TPS subsystem processes\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+ExeFile /usr/sbin/httpd\&.worker
+ExeArgs /usr/sbin/httpd\&.worker \-f /etc/pki\-tps1/httpd\&.conf
+TmpDir /var/lib/pki\-tps1/logs/pids
+PidFile /var/lib/pki\-tps1/logs/wd\-pki\-tps1\&.pid
+ExeContext pki_tps_t
+.fi
+.if n \{\
+.RE
+.\}
+.SH "ADDITIONAL RESOURCES"
+.PP
+There is a more detailed how\-to article, including information on available client calls for
+\fBnuxwdog\fR, at
+\m[blue]\fBhttps://fedorahosted\&.org/nuxwdog/wiki/HOWTO\fR\m[]\&.
+.PP
+The
+\fBnuxwdog\fR
+server works in conjunction with the Dogtag PKI subsystems\&. The Dogtag PKI project wiki is at
+\m[blue]\fBhttp://pki\&.fedoraproject\&.org/wiki/\fR\m[]\&.
+.PP
+For information specifically about
+\fBnuxwdog\fR, the
+\fBnuxwdog\fR
+project wiki is located at
+\m[blue]\fBhttps://fedorahosted\&.org/nuxwdog/wiki/\fR\m[]\&\s-2\u[1]\d\s+2\&. The
+\fBnuxwdog\fR
+relates directly to
+\fBnuxwdog\fR
+code changes and releases, rather than all PKI\-related updates\&.
+.PP
+Mailing lists: pki\-devel@redhat\&.com and pki\-users@redhat\&.com
+.PP
+IRC: Freenode at #dogtag\-pki
+.SH "AUTHORS"
+.PP
+The PKI tools were written and maintained by developers with Netscape and now with Red Hat\&.
+.PP
+Authors: Ade Lee <alee@redhat\&.com>, Deon Lackey <dlackey@redhat\&.com>\&.
+.SH "COPYRIGHT"
+.PP
+(c) 2010, Red Hat, Inc\&. Licensed under the GNU Public License version 2\&.
+.SH "NOTES"
+.IP " 1." 4
+https://fedorahosted.org/nuxwdog/wiki/
+.RS 4
+\%https://fedorahosted.org/nuxwdog/wiki
+.RE
